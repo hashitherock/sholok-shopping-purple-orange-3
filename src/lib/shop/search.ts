@@ -99,6 +99,7 @@ export function recommend(list: Product[], query: string | null, seed: number, l
   const relatedIds = new Set<CategoryId>();
   catIds.forEach((id) => categories.find((c) => c.id === id)?.related.forEach((r) => relatedIds.add(r)));
   const related = take(available.filter((p) => relatedIds.has(p.category) && !catIds.has(p.category)));
+  const fallback = take(available);
 
   if (!direct.length && !sameCat.length) {
     return { items: seededShuffle(available, seed).slice(0, limit), basedOn: null, relevantCount: 0 };
@@ -107,6 +108,7 @@ export function recommend(list: Product[], query: string | null, seed: number, l
     ...seededShuffle(direct, qSeed),
     ...seededShuffle(sameCat, qSeed + 1),
     ...seededShuffle(related, qSeed + 2),
+    ...seededShuffle(fallback, qSeed + 3),
   ].slice(0, limit);
   return { items, basedOn: query, relevantCount: direct.length };
 }
