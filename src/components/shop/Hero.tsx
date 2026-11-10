@@ -14,8 +14,8 @@ export function CategorySidebar() {
   const { showCategory, view } = useShop();
   const selected = view?.type === "category" ? view.id : null;
   return (
-    <aside className="hidden w-64 shrink-0 overflow-hidden rounded-xl border border-border bg-surface lg:block" aria-label="All Categories">
-      <h2 className="border-b border-border px-4 py-3 text-sm font-bold uppercase tracking-wider text-primary">All Categories</h2>
+    <aside className="hidden w-64 shrink-0 overflow-hidden rounded-lg border border-border bg-surface lg:block" aria-label="SHOP BY CATEGORY">
+      <h2 className="border-b border-border px-4 py-3 text-sm font-bold uppercase tracking-wider text-primary">SHOP BY CATEGORY</h2>
       <ul className="divide-y divide-border">
         {categories.map((c) => (
           <li key={c.id}>
@@ -78,15 +78,17 @@ export function HeroSlider() {
     <section
       aria-roledescription="carousel"
       aria-label="Featured promotions"
-      className="relative min-h-80 flex-1 overflow-hidden rounded-xl bg-primary-soft md:min-h-[440px]"
+      className="relative min-h-80 flex-1 overflow-hidden rounded-lg bg-primary-soft md:min-h-[440px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      onTouchStart={(e) => (touchX.current = e.touches[0]!.clientX)}
+      onTouchStart={(e) => (touchX.current = e.touches[0]?.clientX ?? null)}
       onTouchEnd={(e) => {
         if (touchX.current === null) return;
-        const dx = e.changedTouches[0]!.clientX - touchX.current;
+        const touch = e.changedTouches[0];
+        if (!touch) return;
+        const dx = touch.clientX - touchX.current;
         if (Math.abs(dx) > 40) go(i + (dx < 0 ? 1 : -1));
         touchX.current = null;
       }}
@@ -107,11 +109,11 @@ export function HeroSlider() {
             <h2 className="text-3xl font-extrabold leading-tight text-primary-deep md:text-5xl">{s.title}</h2>
             <p className="max-w-sm text-sm text-foreground/80 md:text-base">{s.copy}</p>
             <div className="mt-2 flex flex-wrap gap-3">
-              <button tabIndex={idx === i ? 0 : -1} onClick={() => showCategory(s.cat)} className="flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lift transition-transform hover:-translate-y-0.5">
+              <button tabIndex={idx === i ? 0 : -1} onClick={() => showCategory(s.cat)} className="flex items-center gap-2 rounded-md bg-sale px-6 py-3 text-sm font-semibold text-sale-foreground shadow-lift transition-transform hover:-translate-y-0.5">
                 {s.cta} <ArrowRight className="size-4" aria-hidden />
               </button>
               {s.secondary && (
-                <button tabIndex={idx === i ? 0 : -1} onClick={() => showCategory(s.secondary!.cat)} className="rounded-full border border-primary bg-surface/70 px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-surface">
+                <button tabIndex={idx === i ? 0 : -1} onClick={() => showCategory(s.secondary?.cat ?? s.cat)} className="rounded-full border border-primary bg-surface/70 px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-surface">
                   {s.secondary.label}
                 </button>
               )}
@@ -146,10 +148,10 @@ export function PromotionalBannerGrid() {
   return (
     <section aria-label="Promotions" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {banners.map((b) => (
-        <article key={b.title} className="group relative h-48 overflow-hidden rounded-xl bg-muted">
+        <article key={b.title} className="group relative h-64 overflow-hidden rounded-lg bg-muted">
           <img src={b.img} alt="" width={976} height={688} loading="lazy" className="absolute inset-0 size-full object-cover object-right transition-transform duration-500 group-hover:scale-105" />
           <div className="banner-scrim absolute inset-0" />
-          <div className="relative flex h-full max-w-[65%] flex-col justify-center gap-1.5 p-5">
+          <div className="relative flex h-full max-w-[85%] flex-col justify-center gap-1.5 p-5">
             <span className="text-[11px] font-bold uppercase tracking-wider text-sale">{b.tag}</span>
             <h3 className="text-lg font-bold leading-snug text-primary-deep">{b.title}</h3>
             <p className="text-xs text-foreground/75">{b.copy}</p>

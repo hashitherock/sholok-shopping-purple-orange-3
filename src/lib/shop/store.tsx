@@ -1,12 +1,16 @@
+import { useNavigate } from "@tanstack/react-router";
+import { cartSummary } from "./pricing";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import type { CategoryId } from "./categories";
-import { productById, type Product } from "./products";
+import { products, productById, type Product } from "./products";
 
 export type View = { type: "all" } | { type: "category"; id: CategoryId } | { type: "search"; query: string } | null;
-type Dialog = "account" | "seller" | "cart" | "wishlist" | "location" | "offer" | null;
+type Dialog = "account" | "seller" | "cart" | "wishlist" | "location" | "offer" | "compare" | null;
 
 type Ctx = {
+  compare: string[];
+  toggleCompare: (id: string) => void;
   cart: Record<string, number>;
   cartItems: { product: Product; qty: number }[];
   cartCount: number;
@@ -54,6 +58,11 @@ export function scrollToId(id: string) {
 }
 
 export function ShopProvider({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
+  const [compare, setCompare] = useState<string[]>([]);
+  const [now, setNow] = useState(() => new Date("2026-01-01T00:00:00Z"));
+  useEffect(() => { setNow(new Date()); const t = window.setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
+  const toggleCompare = useCallback((id: string) => { setCompare((ids) => ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]); setDialog("compare"); }, []);
   const [hydrated, setHydrated] = useState(false);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [wishlist, setWishlist] = useState<string[]>([]);
@@ -87,6 +96,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     const p = productById(id);
     if (!p || !p.inStock) return;
     setCart((c) => ({ ...c, [id]: (c[id] ?? 0) + 1 }));
+    setProductId(null);
+    setDialog("cart");
     toast.success("Added to cart", { description: p.name });
   }, []);
   const setQty = useCallback((id: string, qty: number) => {
@@ -109,8 +120,11 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   const setView = useCallback((v: View) => {
     setViewState(v);
-    if (v) scrollToId("results");
-  }, []);
+    if (!v) { void navigate({ to: "/" }); return; }
+    if (v.type === "category") void navigate({ to: "/category/$categoryId", params: { categoryId: v.id } });
+    else if (v.type === "search") void navigate({ to: "/search", search: { q: v.query } });
+    else void navigate({ to: "/shop" });
+  }, [navigate]);
 
   const submitSearch = useCallback((q: string) => {
     const query = q.trim();
@@ -133,18 +147,13 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   const showCategory = useCallback((id: CategoryId) => setView({ type: "category", id }), [setView]);
 
-  const cartItems = useMemo(
-    () => Object.entries(cart).flatMap(([id, qty]) => {
-      const product = productById(id);
-      return product ? [{ product, qty }] : [];
-    }),
-    [cart],
-  );
-  const cartCount = cartItems.reduce((n, i) => n + i.qty, 0);
-  const cartTotal = Math.round(cartItems.reduce((n, i) => n + i.qty * i.product.sellingPrice, 0) * 100) / 100;
+  const summary = useMemo(() => cartSummary(cart, products, now), [cart, now]);
+  const cartItems = summary.items;
+  const cartCount = summary.count;
+  const cartTotal = summary.total;
 
   const value: Ctx = {
-    cart, cartItems, cartCount, cartTotal, addToCart, setQty, removeFromCart,
+    compare, toggleCompare, cart, cartItems, cartCount, cartTotal, addToCart, setQty, removeFromCart,
     wishlist, toggleWishlist, view, setView, lastSearch, submitSearch, clearSearchContext, seed,
     location, setLocation, dialog, openDialog: setDialog, productId, openProduct: setProductId, showCategory,
   };

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ArrowRight, Zap, RotateCcw, SearchX, Sparkles } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { shopConfig } from "@/lib/shop/config";
+import { isCampaignActive, shopConfig } from "@/lib/shop/config";
 import { categories, categoryName, type CategoryId } from "@/lib/shop/categories";
 import { products } from "@/lib/shop/products";
 import { recommend, searchProducts } from "@/lib/shop/search";
@@ -36,7 +36,7 @@ export function ResultsSection() {
 
   if (!view) return <div id="results" />;
   return (
-    <section id="results" aria-labelledby="results-title" className="scroll-mt-16 rounded-2xl border border-border bg-surface p-4 md:p-6">
+    <section id="results" aria-labelledby="results-title" className="scroll-mt-16">
       <SectionHeader id="results-title" title={title} subtitle={subtitle}>
         <button onClick={() => setView(null)} className="text-sm font-semibold text-primary hover:underline">Close</button>
       </SectionHeader>
@@ -62,9 +62,9 @@ function useCountdown(target: string) {
   const [left, setLeft] = useState<number | null>(null);
   useEffect(() => {
     const end = new Date(target).getTime();
-    const tick = () => setLeft(Math.max(0, end - Date.now()));
-    tick();
+    const tick = () => { const remaining = Math.max(0, end - Date.now()); setLeft(remaining); if (remaining === 0) window.clearInterval(t); };
     const t = window.setInterval(tick, 1000);
+    tick();
     return () => window.clearInterval(t);
   }, [target]);
   return left;
@@ -95,7 +95,7 @@ export function FlashSaleSection() {
   const ended = left === 0;
   const items = useMemo(() => products.filter((p) => p.isFlashSale && p.discountPercentage > 0 && p.inStock), []);
   return (
-    <section id="flash-sale" aria-labelledby="flash-title" className="scroll-mt-16 rounded-2xl border border-sale/20 bg-sale-soft p-4 md:p-6">
+    <section id="flash-sale" aria-labelledby="flash-title" className="scroll-mt-16 border-y-2 border-sale/30 bg-sale-soft py-5">
       <SectionHeader id="flash-title" title={<span className="flex items-center gap-2"><Zap className="size-6 fill-sale text-sale" aria-hidden />Flash Sale</span>} subtitle={ended ? "This sale has ended. Check back for new deals." : "Limited-time deals on selected products."}>
         <div className="flex flex-wrap items-center gap-4">
           <Countdown ms={left} />
@@ -106,7 +106,7 @@ export function FlashSaleSection() {
         <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
           <CarouselContent className="-ml-3 md:-ml-4">
             {items.map((p) => (
-              <CarouselItem key={p.id} className="basis-1/2 pl-3 sm:basis-1/3 md:pl-4 lg:basis-1/4 xl:basis-1/5"><ProductCard product={p} /></CarouselItem>
+              <CarouselItem key={p.id} className="basis-1/2 pl-3 sm:basis-1/3 md:pl-4 lg:basis-1/4 xl:basis-1/6"><ProductCard product={p} /></CarouselItem>
             ))}
           </CarouselContent>
           <CarouselPrevious className="-left-3 hidden bg-surface md:flex" />
@@ -139,6 +139,8 @@ export function TrendingSection() {
 
 export function MainCampaignBanner() {
   const { setView } = useShop();
+  const [active, setActive] = useState(false);
+  useEffect(() => { const tick = () => setActive(isCampaignActive()); tick(); const t = window.setInterval(tick, 1000); return () => clearInterval(t); }, []);
   return (
     <section aria-label="Seasonal offer" className="group relative overflow-hidden rounded-2xl bg-muted">
       <img src={campaignImg} alt="Woman in a plum suit and sunglasses" width={1600} height={640} loading="lazy" className="absolute inset-0 size-full object-cover object-right transition-transform duration-700 group-hover:scale-[1.02]" />
@@ -147,8 +149,8 @@ export function MainCampaignBanner() {
         <span className="text-xs font-bold uppercase tracking-[0.25em] text-sale">Special Seasonal Offer</span>
         <h2 className="text-4xl font-extrabold tracking-tight text-primary-deep md:text-6xl">EVERYDAY STYLE</h2>
         <p className="text-lg font-semibold text-foreground/80 md:text-xl">Discover More, Love More</p>
-        <p className="text-base">Save up to <span className="rounded-md bg-sale px-2 py-0.5 font-display text-xl font-bold text-sale-foreground">{shopConfig.campaign.discountPercent}% OFF</span></p>
-        <button onClick={() => setView({ type: "category", id: "fashion-lifestyle" })} className="mt-3 flex w-fit items-center gap-2 rounded-full bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground shadow-lift transition-transform hover:-translate-y-0.5">
+        {active && <p className="text-base">Save up to <span className="rounded-md bg-sale px-2 py-0.5 font-display text-xl font-bold text-sale-foreground">{shopConfig.campaign.discountPercent}% OFF</span></p>}
+        <button onClick={() => setView({ type: "category", id: "fashion-lifestyle" })} className="mt-3 flex w-fit items-center gap-2 rounded-md bg-sale px-7 py-3 text-sm font-semibold text-sale-foreground shadow-lift transition-transform hover:-translate-y-0.5">
           Shop Now <ArrowRight className="size-4" aria-hidden />
         </button>
       </div>
@@ -188,7 +190,7 @@ export function MoreToLoveSection() {
   const rec = useMemo(() => recommend(products, lastSearch, seed), [lastSearch, seed]);
   return (
     <section id="more-to-love" aria-labelledby="mtl-title" className="scroll-mt-16">
-      <SectionHeader id="mtl-title" title={<span className="flex items-center gap-2"><Sparkles className="size-6 text-primary" aria-hidden />More to Love</span>} subtitle="Discover products picked for your interests.">
+      <SectionHeader id="mtl-title" title={<span className="flex items-center gap-2"><Sparkles className="size-6 text-primary" aria-hidden />More to Love</span>} >
         {rec.basedOn && (
           <div className="flex items-center gap-2 rounded-full bg-primary-soft py-1 pl-3 pr-1 text-xs">
             <span>Based on your search: <strong className="text-primary">{rec.basedOn}</strong></span>
