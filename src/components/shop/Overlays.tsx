@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { deliveryAreas } from "@/lib/shop/delivery";
 import { useEffect, useState } from "react";
 import { Minus, Plus, Trash2, ShoppingBag, Heart, MapPin, Check, Store, BadgePercent, Truck, Users } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -35,20 +37,20 @@ export function CartDrawer() {
                     <p className="text-xs text-muted-foreground">{formatPrice(product.sellingPrice)} each</p>
                     <div className="mt-auto flex items-center justify-between">
                       <div className="flex items-center rounded-md border border-border">
-                        <button onClick={() => setQty(product.id, qty - 1)} aria-label={`Decrease ${product.name}`} className="p-1.5 hover:bg-muted"><Minus className="size-3.5" /></button>
+                        <Button variant="plain" onClick={() => setQty(product.id, qty - 1)} aria-label={`Decrease ${product.name}`} className="p-1.5 hover:bg-muted"><Minus className="size-3.5" /></Button>
                         <span className="w-7 text-center text-sm font-semibold">{qty}</span>
-                        <button onClick={() => setQty(product.id, qty + 1)} aria-label={`Increase ${product.name}`} className="p-1.5 hover:bg-muted"><Plus className="size-3.5" /></button>
+                        <Button variant="plain" onClick={() => setQty(product.id, qty + 1)} aria-label={`Increase ${product.name}`} className="p-1.5 hover:bg-muted"><Plus className="size-3.5" /></Button>
                       </div>
                       <span className="text-sm font-bold">{formatPrice(Math.round(qty * product.sellingPrice * 100) / 100)}</span>
                     </div>
                   </div>
-                  <button onClick={() => removeFromCart(product.id)} aria-label={`Remove ${product.name}`} className="self-start p-1 text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
+                  <Button variant="plain" onClick={() => removeFromCart(product.id)} aria-label={`Remove ${product.name}`} className="self-start p-1 text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></Button>
                 </li>
               ))}
             </ul>
             <div className="border-t border-border p-5">
               <div className="flex justify-between text-base font-bold"><span>Subtotal</span><span>{formatPrice(cartTotal)}</span></div>
-              <button disabled className="mt-4 h-11 w-full rounded-lg bg-primary font-semibold text-primary-foreground opacity-60">Checkout</button>
+              <Button variant="plain" disabled className="mt-4 h-11 w-full rounded-lg bg-primary font-semibold text-primary-foreground opacity-60">Checkout</Button>
               <p className="mt-2 text-center text-xs text-muted-foreground">Checkout isn't available in this demo yet.</p>
             </div>
           </>
@@ -78,13 +80,13 @@ export function WishlistDrawer() {
           <ul className="flex-1 divide-y divide-border overflow-y-auto px-5">
             {items.map((p) => (
               <li key={p.id} className="flex gap-3 py-4">
-                <button onClick={() => { openDialog(null); openProduct(p.id); }} className="shrink-0"><img src={p.image} alt={p.name} className="size-18 rounded-lg border border-border bg-surface object-contain p-1" /></button>
+                <Button variant="plain" onClick={() => { openDialog(null); openProduct(p.id); }} className="shrink-0"><img src={p.image} alt={p.name} className="size-18 rounded-lg border border-border bg-surface object-contain p-1" /></Button>
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                   <p className="line-clamp-2 text-sm font-semibold">{p.name}</p>
                   <Price product={p} />
                   <div className="mt-1 flex gap-2">
-                    <button disabled={!p.inStock} onClick={() => addToCart(p.id)} className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-50">Add to Cart</button>
-                    <button onClick={() => toggleWishlist(p.id)} className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold hover:border-destructive hover:text-destructive">Remove</button>
+                    <Button variant="plain" disabled={!p.inStock} onClick={() => addToCart(p.id)} className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-50">Add to Cart</Button>
+                    <Button variant="plain" onClick={() => toggleWishlist(p.id)} className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold hover:border-destructive hover:text-destructive">Remove</Button>
                   </div>
                 </div>
               </li>
@@ -98,26 +100,21 @@ export function WishlistDrawer() {
 
 export function LocationDialog() {
   const { dialog, openDialog, location, setLocation } = useShop();
-  return (
-    <Dialog open={dialog === "location"} onOpenChange={(o) => openDialog(o ? "location" : null)}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Choose your delivery location</DialogTitle>
-          <DialogDescription>Demo locations — used only to personalise this page.</DialogDescription>
-        </DialogHeader>
-        <ul className="grid gap-2">
-          {shopConfig.locations.map((l) => (
-            <li key={l}>
-              <button onClick={() => { setLocation(l); openDialog(null); }} className={`flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-colors hover:border-primary ${location === l ? "border-primary bg-primary-soft font-semibold text-primary" : "border-border"}`}>
-                <MapPin className="size-4 text-primary" aria-hidden /> <span className="flex-1">{l}</span>
-                {location === l && <Check className="size-4" aria-label="Selected" />}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </DialogContent>
-    </Dialog>
-  );
+  const [division, setDivision] = useState("");
+  const [district, setDistrict] = useState("");
+  const [area, setArea] = useState("");
+  const districts = division ? Object.keys(deliveryAreas[division] ?? {}) : [];
+  const areas = deliveryAreas[division]?.[district] ?? [];
+  return <Dialog open={dialog === "location"} onOpenChange={(o) => openDialog(o ? "location" : null)}>
+    <DialogContent className="max-w-md"><DialogHeader><DialogTitle>Choose your delivery location</DialogTitle><DialogDescription>Sample delivery areas{location ? ` · Current: ${location}` : ""}</DialogDescription></DialogHeader>
+      <form className="grid gap-4" onSubmit={(e) => { e.preventDefault(); if (!area) return; setLocation(`${division} / ${district} / ${area}`); openDialog(null); }}>
+        <label className="grid gap-1 text-sm font-medium">Division<select required value={division} onChange={(e) => { setDivision(e.target.value); setDistrict(""); setArea(""); }} className="h-11 rounded-md border border-input bg-surface px-3"><option value="">Select Division</option>{Object.keys(deliveryAreas).map((d) => <option key={d}>{d}</option>)}</select></label>
+        <label className="grid gap-1 text-sm font-medium">District<select required disabled={!division} value={district} onChange={(e) => { setDistrict(e.target.value); setArea(""); }} className="h-11 rounded-md border border-input bg-surface px-3"><option value="">Select District</option>{districts.map((d) => <option key={d}>{d}</option>)}</select></label>
+        <label className="grid gap-1 text-sm font-medium">Area<select required disabled={!district} value={area} onChange={(e) => setArea(e.target.value)} className="h-11 rounded-md border border-input bg-surface px-3"><option value="">Select Area</option>{areas.map((a) => <option key={a}>{a}</option>)}</select></label>
+        <Button disabled={!area} type="submit">Confirm Location</Button>
+      </form>
+    </DialogContent>
+  </Dialog>;
 }
 
 function DemoForm({ fields, cta, note }: { fields: { label: string; type: string }[]; cta: string; note: string }) {
@@ -130,7 +127,7 @@ function DemoForm({ fields, cta, note }: { fields: { label: string; type: string
           <input type={f.type} required className="h-10 rounded-lg border border-input bg-surface px-3 text-sm outline-none focus:border-primary" />
         </label>
       ))}
-      <button className="h-11 rounded-lg bg-primary font-semibold text-primary-foreground hover:bg-primary-deep">{cta}</button>
+      <Button variant="plain" className="h-11 rounded-lg bg-primary font-semibold text-primary-foreground hover:bg-primary-deep">{cta}</Button>
       {sent && <p role="status" className="rounded-lg bg-primary-soft p-3 text-sm text-primary-deep">{note}</p>}
     </form>
   );
@@ -193,11 +190,13 @@ export function OfferPopup() {
     try { seen = window.sessionStorage.getItem("sholok.offerSeen") === "1"; } catch { /* ignore */ }
     if (seen) return;
     const t = window.setTimeout(() => {
+      // Do not interrupt a shopping interaction or another open panel.
+      if (dialog) return;
       openDialog("offer");
       try { window.sessionStorage.setItem("sholok.offerSeen", "1"); } catch { /* ignore */ }
     }, 2500);
     return () => window.clearTimeout(t);
-  }, [openDialog]);
+  }, [openDialog, dialog]);
 
   const o = shopConfig.offer;
   const active = isOfferActive();
@@ -214,7 +213,7 @@ export function OfferPopup() {
             <DialogTitle className="text-2xl font-extrabold text-primary-deep">{active ? o.headline : "No active offers"}</DialogTitle>
             <DialogDescription className="text-sm text-foreground/75">{active ? o.copy : "There are no offers running right now. Check back soon!"}</DialogDescription>
             {active && (
-              <button onClick={() => { openDialog(null); setView({ type: "all" }); }} className="mt-2 h-11 rounded-full bg-primary px-6 font-semibold text-primary-foreground hover:bg-primary-deep">{o.cta}</button>
+              <Button variant="plain" onClick={() => { openDialog(null); setView({ type: "all" }); }} className="mt-2 h-11 rounded-full bg-sale px-6 font-semibold text-sale-foreground hover:bg-sale/90">{o.cta}</Button>
             )}
           </div>
         </div>

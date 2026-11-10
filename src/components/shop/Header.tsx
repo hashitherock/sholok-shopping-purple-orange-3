@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Phone, MapPin, ChevronDown, Search, X, User, Heart, ShoppingCart, Menu, LayoutGrid, Store,
@@ -37,7 +38,7 @@ export function TopBar() {
 function DeliveryLocation() {
   const { location, openDialog } = useShop();
   return (
-    <button
+    <Button variant="plain"
       onClick={() => openDialog("location")}
       className="flex items-center gap-2 rounded-lg border border-border px-2 py-2 text-left transition-colors hover:border-primary hover:bg-primary-soft"
     >
@@ -48,7 +49,7 @@ function DeliveryLocation() {
           {location ?? "Select Location"} <ChevronDown className="size-3.5 shrink-0" aria-hidden />
         </span>
       </span>
-    </button>
+    </Button>
   );
 }
 
@@ -102,23 +103,23 @@ function ProductSearch() {
           className="min-w-0 flex-1 bg-transparent px-4 text-sm outline-none placeholder:text-muted-foreground md:px-5"
         />
         {q && (
-          <button type="button" onClick={() => { setQ(""); setActive(-1); }} aria-label="Clear search" className="px-2 text-muted-foreground hover:text-foreground">
+          <Button variant="plain" type="button" onClick={() => { setQ(""); setActive(-1); }} aria-label="Clear search" className="px-2 text-muted-foreground hover:text-foreground">
             <X className="size-4" />
-          </button>
+          </Button>
         )}
-        <button type="submit" aria-label="Search" className="flex items-center gap-2 bg-sale px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-sale/90 md:px-6">
+        <Button variant="plain" type="submit" aria-label="Search" className="flex items-center gap-2 bg-sale px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-sale/90 md:px-6">
           <Search className="size-4" aria-hidden /> <span className="hidden md:inline">Search</span>
-        </button>
+        </Button>
       </form>
       {open && (suggestions.length > 0 || catSuggestions.length > 0) && (
         <div id="search-suggestions" role="listbox" className="absolute inset-x-0 top-full z-40 mt-2 overflow-hidden rounded-xl border border-border bg-popover shadow-card">
           {catSuggestions.map((c) => (
-            <button key={c.id} type="button" onClick={() => submit(c.name)} className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-primary-soft">
+            <Button variant="plain" key={c.id} type="button" onClick={() => submit(c.name)} className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-primary-soft">
               <c.icon className="size-4 text-primary" aria-hidden /> Search in <strong>{c.name}</strong>
-            </button>
+            </Button>
           ))}
           {suggestions.map((p, i) => (
-            <button
+            <Button variant="plain"
               id={`sugg-${i}`}
               key={p.id}
               role="option"
@@ -131,11 +132,11 @@ function ProductSearch() {
               <img src={p.image} alt="" className="size-9 rounded-md bg-muted object-contain" />
               <span className="min-w-0 flex-1 truncate">{p.name}</span>
               <span className="font-semibold text-primary">{formatPrice(p.sellingPrice)}</span>
-            </button>
+            </Button>
           ))}
-          <button type="button" onClick={() => submit()} className="w-full border-t border-border px-4 py-2.5 text-left text-sm font-semibold text-primary hover:bg-primary-soft">
+          <Button variant="plain" type="button" onClick={() => submit()} className="w-full border-t border-border px-4 py-2.5 text-left text-sm font-semibold text-primary hover:bg-primary-soft">
             See all results for "{q}"
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -144,7 +145,7 @@ function ProductSearch() {
 
 function ActionButton({ icon: Icon, label, sub, count, onClick }: { icon: typeof User; label: string; sub?: string; count?: number; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="group flex items-center gap-2 rounded-lg p-1.5 transition-colors hover:bg-primary-soft" aria-label={count !== undefined ? `${label}, ${count} items` : label}>
+    <Button variant="plain" onClick={onClick} className="group flex items-center gap-2 rounded-lg p-1.5 transition-colors hover:bg-primary-soft" aria-label={count !== undefined ? `${label}, ${count} items` : label}>
       <span className="relative">
         <Icon className="size-6 text-foreground group-hover:text-primary" aria-hidden />
         {count !== undefined && (
@@ -155,7 +156,7 @@ function ActionButton({ icon: Icon, label, sub, count, onClick }: { icon: typeof
         <span className="text-[11px] text-muted-foreground">{sub}</span>
         <span className="text-sm font-semibold">{label}</span>
       </span>
-    </button>
+    </Button>
   );
 }
 
@@ -166,9 +167,9 @@ export function MainHeader() {
     <>
       <div className="border-b border-border bg-surface">
         <div className="container-shop flex flex-wrap items-center gap-2 py-3 xl:flex-nowrap md:gap-3 md:py-4">
-          <button className="rounded-md p-1.5 hover:bg-muted lg:hidden" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
+          <Button variant="plain" className="rounded-md p-1.5 hover:bg-muted lg:hidden" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
             <Menu className="size-6" />
-          </button>
+          </Button>
           <Logo />
           <DeliveryLocation />
           <div className="order-last w-full xl:order-none xl:min-w-32 xl:flex-1"><ProductSearch /></div>
@@ -217,13 +218,13 @@ function MainNavigation() {
           </DropdownMenuContent>
         </DropdownMenu>
         {actions.map((a) => (
-          <button key={a.label} onClick={a.run} className="rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-primary-deep">
+          <Button variant="plain" key={a.label} onClick={a.run} className="rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-primary-deep">
             {a.label}
-          </button>
+          </Button>
         ))}
-        <button onClick={() => openDialog("seller")} className="ml-auto flex items-center gap-2 rounded-md border border-primary-foreground/40 px-2 py-1.5 text-sm font-semibold transition-colors hover:bg-primary-foreground hover:text-primary">
+        <Button variant="plain" onClick={() => openDialog("seller")} className="ml-auto flex items-center gap-2 rounded-md border border-primary-foreground/40 px-2 py-1.5 text-sm font-semibold transition-colors hover:bg-primary-foreground hover:text-primary">
           <Store className="size-4" aria-hidden /> Become a Seller
-        </button>
+        </Button>
       </div>
     </nav>
   );
@@ -237,22 +238,22 @@ function MobileMenu({ open, onOpenChange }: { open: boolean; onOpenChange: (o: b
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="left" className="w-80 overflow-y-auto p-0">
         <SheetHeader className="border-b border-border p-4"><SheetTitle className="text-left"><Logo /></SheetTitle></SheetHeader>
-        <button onClick={close(() => openDialog("location"))} className="flex w-full items-center gap-2 border-b border-border px-4 py-3 text-sm">
+        <Button variant="plain" onClick={close(() => openDialog("location"))} className="flex w-full items-center gap-2 border-b border-border px-4 py-3 text-sm">
           <MapPin className="size-4 text-primary" aria-hidden /> Deliver to: <strong className="truncate">{location ?? "Select Location"}</strong>
-        </button>
+        </Button>
         <nav aria-label="Mobile" className="p-2">
           {actions.map((a) => (
-            <button key={a.label} onClick={close(a.run)} className="block w-full rounded-md px-3 py-2.5 text-left text-sm font-medium hover:bg-primary-soft">{a.label}</button>
+            <Button variant="plain" key={a.label} onClick={close(a.run)} className="block w-full rounded-md px-3 py-2.5 text-left text-sm font-medium hover:bg-primary-soft">{a.label}</Button>
           ))}
-          <button onClick={close(() => openDialog("seller"))} className="block w-full rounded-md px-3 py-2.5 text-left text-sm font-semibold text-primary hover:bg-primary-soft">Become a Seller</button>
+          <Button variant="plain" onClick={close(() => openDialog("seller"))} className="block w-full rounded-md px-3 py-2.5 text-left text-sm font-semibold text-primary hover:bg-primary-soft">Become a Seller</Button>
         </nav>
         <p className="px-5 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">SHOP BY CATEGORY</p>
         <ul className="p-2">
           {categories.map((c) => (
             <li key={c.id}>
-              <button onClick={close(() => showCategory(c.id))} className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm hover:bg-primary-soft">
+              <Button variant="plain" onClick={close(() => showCategory(c.id))} className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm hover:bg-primary-soft">
                 <c.icon className="size-4 text-primary" aria-hidden /> {c.name}
-              </button>
+              </Button>
             </li>
           ))}
         </ul>

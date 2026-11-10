@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ArrowRight, Zap, RotateCcw, SearchX, Sparkles } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -38,7 +39,7 @@ export function ResultsSection() {
   return (
     <section id="results" aria-labelledby="results-title" className="scroll-mt-16">
       <SectionHeader id="results-title" title={title} subtitle={subtitle}>
-        <button onClick={() => setView(null)} className="text-sm font-semibold text-primary hover:underline">Close</button>
+        <Button variant="plain" onClick={() => setView(null)} className="text-sm font-semibold text-primary hover:underline">Close</Button>
       </SectionHeader>
       {items.length ? (
         <ProductGrid items={items} />
@@ -49,7 +50,7 @@ export function ResultsSection() {
           <p className="max-w-sm text-sm text-muted-foreground">Try a different word, or browse one of our categories.</p>
           <div className="mt-2 flex flex-wrap justify-center gap-2">
             {categories.slice(0, 5).map((c) => (
-              <button key={c.id} onClick={() => setView({ type: "category", id: c.id })} className="rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:border-primary hover:text-primary">{c.name}</button>
+              <Button variant="plain" key={c.id} onClick={() => setView({ type: "category", id: c.id })} className="rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:border-primary hover:text-primary">{c.name}</Button>
             ))}
           </div>
         </div>
@@ -99,7 +100,7 @@ export function FlashSaleSection() {
       <SectionHeader id="flash-title" title={<span className="flex items-center gap-2"><Zap className="size-6 fill-sale text-sale" aria-hidden />Flash Sale</span>} subtitle={ended ? "This sale has ended. Check back for new deals." : "Limited-time deals on selected products."}>
         <div className="flex flex-wrap items-center gap-4">
           <Countdown ms={left} />
-          <button onClick={() => setView({ type: "all" })} className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">View All <ArrowRight className="size-4" aria-hidden /></button>
+          <Button variant="plain" onClick={() => setView({ type: "all" })} className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">View All <ArrowRight className="size-4" aria-hidden /></Button>
         </div>
       </SectionHeader>
       {!ended && (
@@ -127,9 +128,9 @@ export function TrendingSection() {
       <SectionHeader id="trending-title" title="Trending Items" subtitle="Popular picks worth discovering." />
       <div className="scrollbar-none -mx-4 mb-5 flex gap-2 overflow-x-auto px-4" role="tablist" aria-label="Filter trending items">
         {[{ id: "all" as const, name: "All" }, ...cats].map((c) => (
-          <button key={c.id} role="tab" aria-selected={filter === c.id} onClick={() => setFilter(c.id)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${filter === c.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface hover:border-primary hover:text-primary"}`}>
+          <Button variant="plain" key={c.id} role="tab" aria-selected={filter === c.id} onClick={() => setFilter(c.id)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${filter === c.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface hover:border-primary hover:text-primary"}`}>
             {c.name}
-          </button>
+          </Button>
         ))}
       </div>
       <ProductGrid items={items} />
@@ -150,9 +151,9 @@ export function MainCampaignBanner() {
         <h2 className="text-4xl font-extrabold tracking-tight text-primary-deep md:text-6xl">EVERYDAY STYLE</h2>
         <p className="text-lg font-semibold text-foreground/80 md:text-xl">Discover More, Love More</p>
         {active && <p className="text-base">Save up to <span className="rounded-md bg-sale px-2 py-0.5 font-display text-xl font-bold text-sale-foreground">{shopConfig.campaign.discountPercent}% OFF</span></p>}
-        <button onClick={() => setView({ type: "category", id: "fashion-lifestyle" })} className="mt-3 flex w-fit items-center gap-2 rounded-md bg-sale px-7 py-3 text-sm font-semibold text-sale-foreground shadow-lift transition-transform hover:-translate-y-0.5">
+        <Button variant="plain" onClick={() => setView({ type: "category", id: "fashion-lifestyle" })} className="mt-3 flex w-fit items-center gap-2 rounded-md bg-sale px-7 py-3 text-sm font-semibold text-sale-foreground shadow-lift transition-transform hover:-translate-y-0.5">
           Shop Now <ArrowRight className="size-4" aria-hidden />
-        </button>
+        </Button>
       </div>
     </section>
   );
@@ -175,10 +176,10 @@ export function ShopByCategory() {
       <SectionHeader id="sbc-title" title="Shop by Category" />
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-7 xl:grid-cols-13">
         {categories.map((c) => (
-          <button key={c.id} onClick={() => showCategory(c.id)} className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-surface p-3 text-center transition-colors hover:border-primary">
+          <Button variant="plain" key={c.id} onClick={() => showCategory(c.id)} className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-surface p-3 text-center transition-colors hover:border-primary">
             <span className="grid size-12 place-items-center rounded-full bg-primary-soft text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><c.icon className="size-5" aria-hidden /></span>
             <span className="text-xs font-medium leading-tight">{c.name}</span>
-          </button>
+          </Button>
         ))}
       </div>
     </section>
@@ -194,9 +195,9 @@ export function MoreToLoveSection() {
         {rec.basedOn && (
           <div className="flex items-center gap-2 rounded-full bg-primary-soft py-1 pl-3 pr-1 text-xs">
             <span>Based on your search: <strong className="text-primary">{rec.basedOn}</strong></span>
-            <button onClick={clearSearchContext} className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 font-semibold hover:text-primary" aria-label="Reset recommendations">
+            <Button variant="plain" onClick={clearSearchContext} className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 font-semibold hover:text-primary" aria-label="Reset recommendations">
               <RotateCcw className="size-3" aria-hidden /> Reset
-            </button>
+            </Button>
           </div>
         )}
       </SectionHeader>
