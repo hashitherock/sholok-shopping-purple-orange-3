@@ -1,14 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Toaster } from "@/components/ui/sonner";
-import { ShopProvider } from "@/lib/shop/store";
-import { TopBar, MainHeader } from "@/components/shop/Header";
 import { CategorySidebar, HeroSlider, MobileCategoryStrip, PromotionalBannerGrid } from "@/components/shop/Hero";
 import {
   ResultsSection, FlashSaleSection, TrendingSection, MainCampaignBanner, NewArrivalsSection, ShopByCategory, MoreToLoveSection,
 } from "@/components/shop/Sections";
-import { ProductDetailDialog } from "@/components/shop/ProductCard";
-import { CartDrawer, WishlistDrawer, LocationDialog, AccountDialog, SellerDialog, OfferPopup } from "@/components/shop/Overlays";
-import { SiteFooter } from "@/components/shop/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,9 +20,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <ShopProvider>
-      <TopBar />
-      <MainHeader />
+    <>
       <main className="container-shop flex flex-col gap-10 py-5 md:gap-14 md:py-6">
         <div className="flex flex-col gap-4">
           <MobileCategoryStrip />
@@ -43,15 +35,6 @@ function Index() {
         <NewArrivalsSection />
         <MoreToLoveSection />
       </main>
-      <SiteFooter />
-      <ProductDetailDialog />
-      <CartDrawer />
-      <WishlistDrawer />
-      <LocationDialog />
-      <AccountDialog />
-      <SellerDialog />
-      <OfferPopup />
-      <Toaster position="bottom-center" />
-    </ShopProvider>
+    </>
   );
 }
