@@ -75,12 +75,12 @@
   --card-foreground: oklch(0.25 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.25 0 0);
-  --primary: oklch(0.37657 0.20783 303.17);
+  --primary: oklch(0.3839088706 0.1999367998 304.5083361);
   --cart-panel: oklch(0.25196 0 0);
   --primary-foreground: oklch(1 0 0);
   --primary-soft: oklch(0.955 0.025 307);
   --primary-deep: oklch(0.3 0.16 307);
-  --sale: oklch(0.55252 0.21778 29.59);
+  --sale: oklch(0.5513483284 0.2164436029 29.1375754);
   --sale-foreground: oklch(1 0 0);
   --sale-soft: oklch(0.96 0.03 29);
   --success: oklch(0.55 0.14 152);

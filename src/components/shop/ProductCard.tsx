@@ -42,7 +42,7 @@ export function ProductCard({ product: source }: { product: Product }) {
   const saved = wishlist.includes(product.id);
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lift">
-      <Button variant="plain" onClick={() => openProduct(product.id)} className="relative block aspect-square bg-surface p-4" aria-label={`View ${product.name}`}>
+      <Button variant="plain" onClick={() => openProduct(product.id)} className="relative block aspect-square w-full shrink-0 bg-surface p-4" aria-label={`View ${product.name}`}>
         <img src={product.image} alt={product.name} width={300} height={300} loading="lazy" className="size-full object-contain transition-transform duration-300 group-hover:scale-105" />
         {product.discountPercentage > 0 && (
           <span className="absolute left-2.5 top-2.5 rounded-md bg-sale px-2 py-0.5 text-[11px] font-bold text-sale-foreground">{product.discountPercentage}% OFF</span>
@@ -65,7 +65,7 @@ export function ProductCard({ product: source }: { product: Product }) {
       </div>
       <div className="flex flex-1 flex-col gap-1.5 border-t border-border p-3">
         <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{product.brand}</span>
-        <Button variant="plain" onClick={() => openProduct(product.id)} className="line-clamp-2 min-h-10 text-left text-sm font-semibold leading-5 hover:text-primary">{product.name}</Button>
+        <Button variant="plain" onClick={() => openProduct(product.id)} className="line-clamp-2 min-h-10 whitespace-normal text-left text-sm font-semibold leading-5 hover:text-primary">{product.name}</Button>
         <Rating product={product} />
         <div className="mt-auto pt-1"><Price product={product} /></div>
         <Button variant="plain"
@@ -90,10 +90,13 @@ export function ProductGrid({ items }: { items: Product[] }) {
 
 export function ProductDetailDialog() {
   const { productId, openProduct, addToCart, toggleWishlist, wishlist, cart, setQty } = useShop();
-  const product = productId ? productById(productId) : undefined;
+  const source = productId ? productById(productId) : undefined;
+  const [now, setNow] = useState(() => new Date("2026-01-01T00:00:00Z"));
+  useEffect(() => { setNow(new Date()); const t = window.setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
+  const product = source ? currentProduct(source, now) : undefined;
   return (
     <Dialog open={!!product} onOpenChange={(o) => !o && openProduct(null)}>
-      <DialogContent className="max-w-3xl p-0 sm:rounded-2xl">
+      <DialogContent className="max-h-[90dvh] max-w-3xl overflow-y-auto p-0 sm:rounded-lg">
         {product && (
           <div className="grid md:grid-cols-2">
             <div className="relative aspect-square bg-surface p-8">

@@ -1,9 +1,8 @@
 // Central demo configuration. Replace placeholders with real values when available.
 export const shopConfig = {
   currency: { symbol: "৳", locale: "en-BD", code: "BDT" },
-  // Official contact details have not been supplied. Never display invented contacts.
-  phone: null as { display: string; tel: string } | null,
-  email: null as string | null,
+  phone: { display: "+8801716509407", tel: "+8801716509407" },
+  email: "sholoksell@gmail.com",
   dataMode: "sample",
   flashSale: { endsAt: "2026-12-31T23:59:59+06:00" },
   campaign: { discountPercent: 20, active: true, startsAt: "2026-01-01T00:00:00+06:00", endsAt: "2026-12-31T23:59:59+06:00" },
