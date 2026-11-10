@@ -45,8 +45,8 @@ function DeliveryLocation() {
       <MapPin className="size-5 text-primary" aria-hidden />
       <span className="flex flex-col leading-tight">
         <span className="text-[11px] text-muted-foreground">Deliver to</span>
-        <span className="flex max-w-24 items-center gap-1 truncate text-sm font-semibold">
-          {location ?? "Select Location"} <ChevronDown className="size-3.5 shrink-0" aria-hidden />
+        <span className="flex max-w-32 items-center gap-1 text-sm font-semibold">
+          <span className="truncate">{location ?? "Select Location"}</span> <ChevronDown className="size-3.5 shrink-0" aria-hidden />
         </span>
       </span>
     </Button>

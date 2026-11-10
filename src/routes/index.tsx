@@ -27,7 +27,6 @@ function Index() {
           <div className="flex gap-5"><CategorySidebar /><HeroSlider /></div>
           <PromotionalBannerGrid />
         </div>
-        <ResultsSection />
         <FlashSaleSection />
         <TrendingSection />
         <MainCampaignBanner />
