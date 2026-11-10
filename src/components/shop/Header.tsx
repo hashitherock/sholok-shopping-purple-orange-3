@@ -191,9 +191,9 @@ function useNavActions() {
   return [
     { label: "Home", run: () => { setView(null); window.scrollTo({ top: 0, behavior: "smooth" }); } },
     { label: "Shop", run: () => setView({ type: "all" }) },
-    { label: "Flash Sale", run: () => scrollToId("flash-sale") },
-    { label: "Trending", run: () => scrollToId("trending") },
-    { label: "New Arrivals", run: () => scrollToId("new-arrivals") },
+    { label: "Flash Sale", run: () => { setView(null); setTimeout(() => scrollToId("flash-sale"), 150); } },
+    { label: "Trending", run: () => { setView(null); setTimeout(() => scrollToId("trending"), 150); } },
+    { label: "New Arrivals", run: () => { setView(null); setTimeout(() => scrollToId("new-arrivals"), 150); } },
     { label: "Offers", run: () => openDialog("offer") },
   ];
 }
