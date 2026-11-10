@@ -178,7 +178,7 @@ export function ShopByCategory() {
         {categories.map((c) => (
           <Button variant="plain" key={c.id} onClick={() => showCategory(c.id)} className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-surface p-3 text-center transition-colors hover:border-primary">
             <span className="grid size-12 place-items-center rounded-full bg-primary-soft text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><c.icon className="size-5" aria-hidden /></span>
-            <span className="text-xs font-medium leading-tight">{c.name}</span>
+            <span className="whitespace-normal text-xs font-medium leading-tight">{c.name}</span>
           </Button>
         ))}
       </div>

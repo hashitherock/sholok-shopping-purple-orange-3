@@ -79,7 +79,7 @@ export function HeroSlider() {
     <section
       aria-roledescription="carousel"
       aria-label="Featured promotions"
-      className="relative min-h-80 flex-1 overflow-hidden rounded-lg bg-primary-soft md:min-h-[440px]"
+      className="relative min-h-[400px] flex-1 overflow-hidden rounded-lg bg-primary-soft md:min-h-[440px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -105,7 +105,7 @@ export function HeroSlider() {
         >
           <img src={s.img} alt="" width={1600} height={800} loading={idx === 0 ? "eager" : "lazy"} fetchPriority={idx === 0 ? "high" : "auto"} className="absolute inset-0 size-full object-cover object-right" />
           <div className="banner-scrim absolute inset-0" />
-          <div className="relative flex h-full max-w-lg flex-col justify-center gap-3 p-6 md:p-12">
+          <div className="relative flex h-full max-w-lg flex-col justify-center gap-3 p-6 pb-12 md:p-12">
             <span className="w-fit rounded-full bg-sale px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-sale-foreground">{s.eyebrow}</span>
             <h2 className="text-3xl font-extrabold leading-tight text-primary-deep md:text-5xl">{s.title}</h2>
             <p className="max-w-sm text-sm text-foreground/80 md:text-base">{s.copy}</p>
