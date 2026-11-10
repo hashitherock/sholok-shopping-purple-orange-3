@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { categories, type CategoryId } from "@/lib/shop/categories";
@@ -14,12 +15,12 @@ export function CategorySidebar() {
   const { showCategory, view } = useShop();
   const selected = view?.type === "category" ? view.id : null;
   return (
-    <aside className="hidden w-64 shrink-0 overflow-hidden rounded-xl border border-border bg-surface lg:block" aria-label="All Categories">
-      <h2 className="border-b border-border px-4 py-3 text-sm font-bold uppercase tracking-wider text-primary">All Categories</h2>
+    <aside className="hidden w-64 shrink-0 overflow-hidden rounded-lg border border-border bg-surface lg:block" aria-label="SHOP BY CATEGORY">
+      <h2 className="border-b border-border px-4 py-3 text-sm font-bold uppercase tracking-wider text-primary">SHOP BY CATEGORY</h2>
       <ul className="divide-y divide-border">
         {categories.map((c) => (
           <li key={c.id}>
-            <button
+            <Button variant="plain"
               onClick={() => showCategory(c.id)}
               aria-current={selected === c.id}
               className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-primary-soft hover:text-primary ${selected === c.id ? "bg-primary-soft font-semibold text-primary" : ""}`}
@@ -27,7 +28,7 @@ export function CategorySidebar() {
               <c.icon className="size-4 shrink-0 text-primary" aria-hidden />
               <span className="flex-1">{c.name}</span>
               <ChevronRight className="size-3.5 text-muted-foreground" aria-hidden />
-            </button>
+            </Button>
           </li>
         ))}
       </ul>
@@ -41,14 +42,14 @@ export function MobileCategoryStrip() {
   return (
     <div className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:hidden" role="list" aria-label="Categories">
       {categories.map((c) => (
-        <button
+        <Button variant="plain"
           key={c.id}
           role="listitem"
           onClick={() => showCategory(c.id)}
           className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${selected === c.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface hover:border-primary"}`}
         >
           <c.icon className="size-3.5" aria-hidden /> {c.name}
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -78,15 +79,17 @@ export function HeroSlider() {
     <section
       aria-roledescription="carousel"
       aria-label="Featured promotions"
-      className="relative min-h-80 flex-1 overflow-hidden rounded-xl bg-primary-soft md:min-h-[440px]"
+      className="relative min-h-80 flex-1 overflow-hidden rounded-lg bg-primary-soft md:min-h-[440px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      onTouchStart={(e) => (touchX.current = e.touches[0]!.clientX)}
+      onTouchStart={(e) => (touchX.current = e.touches[0]?.clientX ?? null)}
       onTouchEnd={(e) => {
         if (touchX.current === null) return;
-        const dx = e.changedTouches[0]!.clientX - touchX.current;
+        const touch = e.changedTouches[0];
+        if (!touch) return;
+        const dx = touch.clientX - touchX.current;
         if (Math.abs(dx) > 40) go(i + (dx < 0 ? 1 : -1));
         touchX.current = null;
       }}
@@ -107,27 +110,27 @@ export function HeroSlider() {
             <h2 className="text-3xl font-extrabold leading-tight text-primary-deep md:text-5xl">{s.title}</h2>
             <p className="max-w-sm text-sm text-foreground/80 md:text-base">{s.copy}</p>
             <div className="mt-2 flex flex-wrap gap-3">
-              <button tabIndex={idx === i ? 0 : -1} onClick={() => showCategory(s.cat)} className="flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lift transition-transform hover:-translate-y-0.5">
+              <Button variant="plain" tabIndex={idx === i ? 0 : -1} onClick={() => showCategory(s.cat)} className="flex items-center gap-2 rounded-md bg-sale px-6 py-3 text-sm font-semibold text-sale-foreground shadow-lift transition-transform hover:-translate-y-0.5">
                 {s.cta} <ArrowRight className="size-4" aria-hidden />
-              </button>
+              </Button>
               {s.secondary && (
-                <button tabIndex={idx === i ? 0 : -1} onClick={() => showCategory(s.secondary!.cat)} className="rounded-full border border-primary bg-surface/70 px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-surface">
+                <Button variant="plain" tabIndex={idx === i ? 0 : -1} onClick={() => showCategory(s.secondary?.cat ?? s.cat)} className="rounded-full border border-primary bg-surface/70 px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-surface">
                   {s.secondary.label}
-                </button>
+                </Button>
               )}
             </div>
           </div>
         </div>
       ))}
-      <button onClick={() => go(i - 1)} aria-label="Previous slide" className="absolute left-3 top-1/2 hidden size-10 -translate-y-1/2 place-items-center rounded-full bg-surface/90 text-primary shadow-card hover:bg-surface md:grid">
+      <Button variant="plain" onClick={() => go(i - 1)} aria-label="Previous slide" className="absolute left-3 top-1/2 hidden size-10 -translate-y-1/2 place-items-center rounded-full bg-surface/90 text-primary shadow-card hover:bg-surface md:grid">
         <ChevronLeft className="size-5" />
-      </button>
-      <button onClick={() => go(i + 1)} aria-label="Next slide" className="absolute right-3 top-1/2 hidden size-10 -translate-y-1/2 place-items-center rounded-full bg-surface/90 text-primary shadow-card hover:bg-surface md:grid">
+      </Button>
+      <Button variant="plain" onClick={() => go(i + 1)} aria-label="Next slide" className="absolute right-3 top-1/2 hidden size-10 -translate-y-1/2 place-items-center rounded-full bg-surface/90 text-primary shadow-card hover:bg-surface md:grid">
         <ChevronRight className="size-5" />
-      </button>
+      </Button>
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
         {slides.map((s, idx) => (
-          <button key={s.title} onClick={() => go(idx)} aria-label={`Go to slide ${idx + 1}`} aria-current={idx === i} className={`h-2 rounded-full transition-all ${idx === i ? "w-7 bg-primary" : "w-2 bg-primary/30"}`} />
+          <Button variant="plain" key={s.title} onClick={() => go(idx)} aria-label={`Go to slide ${idx + 1}`} aria-current={idx === i} className={`h-2 rounded-full transition-all ${idx === i ? "w-7 bg-primary" : "w-2 bg-primary/30"}`} />
         ))}
       </div>
     </section>
@@ -146,16 +149,16 @@ export function PromotionalBannerGrid() {
   return (
     <section aria-label="Promotions" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {banners.map((b) => (
-        <article key={b.title} className="group relative h-48 overflow-hidden rounded-xl bg-muted">
+        <article key={b.title} className="group relative h-64 overflow-hidden rounded-lg bg-muted">
           <img src={b.img} alt="" width={976} height={688} loading="lazy" className="absolute inset-0 size-full object-cover object-right transition-transform duration-500 group-hover:scale-105" />
           <div className="banner-scrim absolute inset-0" />
-          <div className="relative flex h-full max-w-[65%] flex-col justify-center gap-1.5 p-5">
+          <div className="relative flex h-full max-w-[85%] flex-col justify-center gap-1.5 p-5">
             <span className="text-[11px] font-bold uppercase tracking-wider text-sale">{b.tag}</span>
             <h3 className="text-lg font-bold leading-snug text-primary-deep">{b.title}</h3>
             <p className="text-xs text-foreground/75">{b.copy}</p>
-            <button onClick={() => showCategory(b.cat)} className="mt-1 flex w-fit items-center gap-1 text-sm font-semibold text-primary hover:underline">
+            <Button variant="plain" onClick={() => showCategory(b.cat)} className="mt-1 flex w-fit items-center gap-1 text-sm font-semibold text-primary hover:underline">
               {b.cta} <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-            </button>
+            </Button>
           </div>
         </article>
       ))}

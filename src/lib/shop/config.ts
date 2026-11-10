@@ -1,11 +1,12 @@
 // Central demo configuration. Replace placeholders with real values when available.
 export const shopConfig = {
-  currency: { symbol: "$", locale: "en-US", code: "USD" },
-  // Placeholder number — replace with the official Sholok support number.
-  phone: { display: "+880 1XXX-XXXXXX", tel: "+8801000000000" },
-  email: "support@example.com",
+  currency: { symbol: "৳", locale: "en-BD", code: "BDT" },
+  // Official contact details have not been supplied. Never display invented contacts.
+  phone: null as { display: string; tel: string } | null,
+  email: null as string | null,
+  dataMode: "sample",
   flashSale: { endsAt: "2026-12-31T23:59:59+06:00" },
-  campaign: { discountPercent: 20 },
+  campaign: { discountPercent: 20, active: true, startsAt: "2026-01-01T00:00:00+06:00", endsAt: "2026-12-31T23:59:59+06:00" },
   offer: {
     active: true,
     startsAt: "2026-01-01T00:00:00+06:00",
@@ -30,6 +31,15 @@ export const shopConfig = {
 export function formatPrice(value: number) {
   const { symbol } = shopConfig.currency;
   return `${symbol}${value.toFixed(2)}`;
+}
+
+export function isFlashSaleActive(now = new Date()) {
+  return now.getTime() < new Date(shopConfig.flashSale.endsAt).getTime();
+}
+
+export function isCampaignActive(now = new Date()) {
+  const c = shopConfig.campaign;
+  return c.active && now >= new Date(c.startsAt) && now < new Date(c.endsAt);
 }
 
 export function isOfferActive(now = new Date()) {

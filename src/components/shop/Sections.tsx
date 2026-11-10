@@ -1,7 +1,8 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ArrowRight, Zap, RotateCcw, SearchX, Sparkles } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { shopConfig } from "@/lib/shop/config";
+import { isCampaignActive, shopConfig } from "@/lib/shop/config";
 import { categories, categoryName, type CategoryId } from "@/lib/shop/categories";
 import { products } from "@/lib/shop/products";
 import { recommend, searchProducts } from "@/lib/shop/search";
@@ -36,9 +37,9 @@ export function ResultsSection() {
 
   if (!view) return <div id="results" />;
   return (
-    <section id="results" aria-labelledby="results-title" className="scroll-mt-16 rounded-2xl border border-border bg-surface p-4 md:p-6">
+    <section id="results" aria-labelledby="results-title" className="scroll-mt-16">
       <SectionHeader id="results-title" title={title} subtitle={subtitle}>
-        <button onClick={() => setView(null)} className="text-sm font-semibold text-primary hover:underline">Close</button>
+        <Button variant="plain" onClick={() => setView(null)} className="text-sm font-semibold text-primary hover:underline">Close</Button>
       </SectionHeader>
       {items.length ? (
         <ProductGrid items={items} />
@@ -49,7 +50,7 @@ export function ResultsSection() {
           <p className="max-w-sm text-sm text-muted-foreground">Try a different word, or browse one of our categories.</p>
           <div className="mt-2 flex flex-wrap justify-center gap-2">
             {categories.slice(0, 5).map((c) => (
-              <button key={c.id} onClick={() => setView({ type: "category", id: c.id })} className="rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:border-primary hover:text-primary">{c.name}</button>
+              <Button variant="plain" key={c.id} onClick={() => setView({ type: "category", id: c.id })} className="rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:border-primary hover:text-primary">{c.name}</Button>
             ))}
           </div>
         </div>
@@ -62,9 +63,9 @@ function useCountdown(target: string) {
   const [left, setLeft] = useState<number | null>(null);
   useEffect(() => {
     const end = new Date(target).getTime();
-    const tick = () => setLeft(Math.max(0, end - Date.now()));
-    tick();
+    const tick = () => { const remaining = Math.max(0, end - Date.now()); setLeft(remaining); if (remaining === 0) window.clearInterval(t); };
     const t = window.setInterval(tick, 1000);
+    tick();
     return () => window.clearInterval(t);
   }, [target]);
   return left;
@@ -95,18 +96,18 @@ export function FlashSaleSection() {
   const ended = left === 0;
   const items = useMemo(() => products.filter((p) => p.isFlashSale && p.discountPercentage > 0 && p.inStock), []);
   return (
-    <section id="flash-sale" aria-labelledby="flash-title" className="scroll-mt-16 rounded-2xl border border-sale/20 bg-sale-soft p-4 md:p-6">
+    <section id="flash-sale" aria-labelledby="flash-title" className="scroll-mt-16 border-y-2 border-sale/30 bg-sale-soft py-5">
       <SectionHeader id="flash-title" title={<span className="flex items-center gap-2"><Zap className="size-6 fill-sale text-sale" aria-hidden />Flash Sale</span>} subtitle={ended ? "This sale has ended. Check back for new deals." : "Limited-time deals on selected products."}>
         <div className="flex flex-wrap items-center gap-4">
           <Countdown ms={left} />
-          <button onClick={() => setView({ type: "all" })} className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">View All <ArrowRight className="size-4" aria-hidden /></button>
+          <Button variant="plain" onClick={() => setView({ type: "all" })} className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">View All <ArrowRight className="size-4" aria-hidden /></Button>
         </div>
       </SectionHeader>
       {!ended && (
         <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
           <CarouselContent className="-ml-3 md:-ml-4">
             {items.map((p) => (
-              <CarouselItem key={p.id} className="basis-1/2 pl-3 sm:basis-1/3 md:pl-4 lg:basis-1/4 xl:basis-1/5"><ProductCard product={p} /></CarouselItem>
+              <CarouselItem key={p.id} className="basis-1/2 pl-3 sm:basis-1/3 md:pl-4 lg:basis-1/4 xl:basis-1/6"><ProductCard product={p} /></CarouselItem>
             ))}
           </CarouselContent>
           <CarouselPrevious className="-left-3 hidden bg-surface md:flex" />
@@ -127,9 +128,9 @@ export function TrendingSection() {
       <SectionHeader id="trending-title" title="Trending Items" subtitle="Popular picks worth discovering." />
       <div className="scrollbar-none -mx-4 mb-5 flex gap-2 overflow-x-auto px-4" role="tablist" aria-label="Filter trending items">
         {[{ id: "all" as const, name: "All" }, ...cats].map((c) => (
-          <button key={c.id} role="tab" aria-selected={filter === c.id} onClick={() => setFilter(c.id)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${filter === c.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface hover:border-primary hover:text-primary"}`}>
+          <Button variant="plain" key={c.id} role="tab" aria-selected={filter === c.id} onClick={() => setFilter(c.id)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${filter === c.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface hover:border-primary hover:text-primary"}`}>
             {c.name}
-          </button>
+          </Button>
         ))}
       </div>
       <ProductGrid items={items} />
@@ -139,6 +140,8 @@ export function TrendingSection() {
 
 export function MainCampaignBanner() {
   const { setView } = useShop();
+  const [active, setActive] = useState(false);
+  useEffect(() => { const tick = () => setActive(isCampaignActive()); tick(); const t = window.setInterval(tick, 1000); return () => clearInterval(t); }, []);
   return (
     <section aria-label="Seasonal offer" className="group relative overflow-hidden rounded-2xl bg-muted">
       <img src={campaignImg} alt="Woman in a plum suit and sunglasses" width={1600} height={640} loading="lazy" className="absolute inset-0 size-full object-cover object-right transition-transform duration-700 group-hover:scale-[1.02]" />
@@ -147,10 +150,10 @@ export function MainCampaignBanner() {
         <span className="text-xs font-bold uppercase tracking-[0.25em] text-sale">Special Seasonal Offer</span>
         <h2 className="text-4xl font-extrabold tracking-tight text-primary-deep md:text-6xl">EVERYDAY STYLE</h2>
         <p className="text-lg font-semibold text-foreground/80 md:text-xl">Discover More, Love More</p>
-        <p className="text-base">Save up to <span className="rounded-md bg-sale px-2 py-0.5 font-display text-xl font-bold text-sale-foreground">{shopConfig.campaign.discountPercent}% OFF</span></p>
-        <button onClick={() => setView({ type: "category", id: "fashion-lifestyle" })} className="mt-3 flex w-fit items-center gap-2 rounded-full bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground shadow-lift transition-transform hover:-translate-y-0.5">
+        {active && <p className="text-base">Save up to <span className="rounded-md bg-sale px-2 py-0.5 font-display text-xl font-bold text-sale-foreground">{shopConfig.campaign.discountPercent}% OFF</span></p>}
+        <Button variant="plain" onClick={() => setView({ type: "category", id: "fashion-lifestyle" })} className="mt-3 flex w-fit items-center gap-2 rounded-md bg-sale px-7 py-3 text-sm font-semibold text-sale-foreground shadow-lift transition-transform hover:-translate-y-0.5">
           Shop Now <ArrowRight className="size-4" aria-hidden />
-        </button>
+        </Button>
       </div>
     </section>
   );
@@ -173,10 +176,10 @@ export function ShopByCategory() {
       <SectionHeader id="sbc-title" title="Shop by Category" />
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-7 xl:grid-cols-13">
         {categories.map((c) => (
-          <button key={c.id} onClick={() => showCategory(c.id)} className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-surface p-3 text-center transition-colors hover:border-primary">
+          <Button variant="plain" key={c.id} onClick={() => showCategory(c.id)} className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-surface p-3 text-center transition-colors hover:border-primary">
             <span className="grid size-12 place-items-center rounded-full bg-primary-soft text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><c.icon className="size-5" aria-hidden /></span>
             <span className="text-xs font-medium leading-tight">{c.name}</span>
-          </button>
+          </Button>
         ))}
       </div>
     </section>
@@ -188,13 +191,13 @@ export function MoreToLoveSection() {
   const rec = useMemo(() => recommend(products, lastSearch, seed), [lastSearch, seed]);
   return (
     <section id="more-to-love" aria-labelledby="mtl-title" className="scroll-mt-16">
-      <SectionHeader id="mtl-title" title={<span className="flex items-center gap-2"><Sparkles className="size-6 text-primary" aria-hidden />More to Love</span>} subtitle="Discover products picked for your interests.">
+      <SectionHeader id="mtl-title" title={<span className="flex items-center gap-2"><Sparkles className="size-6 text-primary" aria-hidden />More to Love</span>} >
         {rec.basedOn && (
           <div className="flex items-center gap-2 rounded-full bg-primary-soft py-1 pl-3 pr-1 text-xs">
             <span>Based on your search: <strong className="text-primary">{rec.basedOn}</strong></span>
-            <button onClick={clearSearchContext} className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 font-semibold hover:text-primary" aria-label="Reset recommendations">
+            <Button variant="plain" onClick={clearSearchContext} className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 font-semibold hover:text-primary" aria-label="Reset recommendations">
               <RotateCcw className="size-3" aria-hidden /> Reset
-            </button>
+            </Button>
           </div>
         )}
       </SectionHeader>
